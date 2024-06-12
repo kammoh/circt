@@ -12,7 +12,7 @@ LLVM_BUILD_DIR=$CIRCT_ROOT/llvm/build
 
 BUILD_STAGE=install
 
-if [ -n "$BUILD_LLVM" ]
+if [ "$BUILD_LLVM" != "0" ]
 then
 echo "Building LLVM"
 cmake -B $LLVM_BUILD_DIR -G Ninja $LLVM_ROOT/llvm \
