@@ -30,6 +30,8 @@ jobs:
             cibw_build: cp38-macosx_x86_64
           - os: macos-12
             cibw_build: cp310-macosx_x86_64
+          - os: macos-14
+            cibw_build: cp310-macosx_universal2
 
     steps:
       - name: Get CIRCT

@@ -12,6 +12,7 @@ on:
         options:
           - linux
           - macos
+          - macos-arm64
           - windows
 
       # The following options only influence workflow_dispatch, and are ignored otherwise.
@@ -115,6 +116,25 @@ jobs:
           json=$(echo '${{ toJSON(env) }}' | jq -c)
           echo $json
           echo "out=$json" >> $GITHUB_OUTPUT
+      - name: Add macOS-arm64
+        id: add-macos-arm64
+        if: github.event_name == 'release' || ( github.event_name == 'workflow_dispatch' && inputs.os == 'macos-arm64' )
+        env:
+          os: macos
+          runner: macos-14
+          arch: arm64
+          tar: gtar czf
+          archive: tar.gz
+          sha256: shasum -a 256
+          cont: '\'
+          setup:
+          cmake-args:
+          cmake_c_compiler: clang
+          cmake_cxx_compiler: clang++
+        run: |
+          json=$(echo '${{ toJSON(env) }}' | jq -c)
+          echo $json
+          echo "out=$json" >> $GITHUB_OUTPUT
       - name: Add Windows
         id: add-windows
         if: github.event_name == 'release' || ( github.event_name == 'workflow_dispatch' && inputs.os == 'windows' )
@@ -164,7 +184,7 @@ jobs:
         id: build-json-payloads
         run: |
           echo '${{ steps.add-build-config-firtool.outputs.out }}' '${{ steps.add-build-config-circt-full-shared.outputs.out }}' '${{ steps.add-build-config-circt-full-static.outputs.out }}' | jq -sc . > build_configs.json
-          echo '${{ steps.add-linux.outputs.out }}' '${{ steps.add-macos.outputs.out }}' '${{ steps.add-windows.outputs.out }}' | jq -sc . > runners.json
+          echo '${{ steps.add-linux.outputs.out }}' '${{ steps.add-macos.outputs.out }}' '${{ steps.add-macos-arm64.outputs.out }}' '${{ steps.add-windows.outputs.out }}' | jq -sc . > runners.json
 
           cat runners.json build_configs.json | jq -sc '[combinations | add]' > matrix-raw.json
 
